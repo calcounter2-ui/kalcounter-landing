@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>קל-קאונטר+AI — מחשבון קלוריות חכם</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green:  #3a7d44;
+      --green2: #52a85f;
+      --light:  #f4f8f4;
+      --dark:   #1c2b18;
+      --gray:   #6b7c6b;
+      --card:   #ffffff;
+      --radius: 20px;
+    }
+    body { font-family: 'Rubik', sans-serif; background: var(--light); color: var(--dark); direction: rtl; }
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e2e8df;
+      display: flex; align-items: center; justify-content: space-between; padding: 14px 40px;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; }
+    .nav-logo img { width: 40px; height: 40px; border-radius: 10px; }
+    .nav-logo span { font-weight: 800; font-size: 18px; color: var(--green); }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--dark); font-weight: 500; font-size: 15px; transition: color .2s; }
+    .nav-links a:hover { color: var(--green); }
+    .hero {
+      background: linear-gradient(135deg, #1c2b18 0%, #3a7d44 60%, #52a85f 100%);
+      color: white; padding: 80px 40px 100px; text-align: center; position: relative; overflow: hidden;
+    }
+    .hero-icon { width: 100px; height: 100px; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin: 0 auto 24px; display: block; }
+    .hero h1 { font-size: clamp(32px, 6vw, 56px); font-weight: 900; line-height: 1.1; margin-bottom: 16px; }
+    .hero h1 span { color: #a8e6b0; }
+    .hero p { font-size: 18px; color: rgba(255,255,255,0.85); max-width: 560px; margin: 0 auto 36px; line-height: 1.7; }
+    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: white; color: var(--green); padding: 14px 32px; border-radius: 50px;
+      font-weight: 800; font-size: 16px; text-decoration: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2); transition: transform .2s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.15); color: white; border: 2px solid rgba(255,255,255,0.4);
+      padding: 14px 32px; border-radius: 50px; font-weight: 700; font-size: 16px; text-decoration: none;
+    }
+    .badges {
+      display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;
+      padding: 24px 40px; background: white; border-bottom: 1px solid #e2e8df;
+    }
+    .badge { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--gray); }
+    .badge span { font-size: 20px; }
+    section { padding: 80px 40px; max-width: 1100px; margin: 0 auto; }
+    .section-title { text-align: center; font-size: 34px; font-weight: 900; color: var(--dark); margin-bottom: 12px; }
+    .section-sub { text-align: center; font-size: 17px; color: var(--gray); margin-bottom: 56px; line-height: 1.6; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .feature-card {
+      background: var(--card); border-radius: var(--radius); padding: 32px 28px;
+      border: 1.5px solid #e2e8df; box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: transform .2s;
+    }
+    .feature-card:hover { transform: translateY(-4px); }
+    .feature-icon {
+      width: 56px; height: 56px; background: linear-gradient(135deg, #e8f5ea, #c8e6cc);
+      border-radius: 16px; display: flex; align-items: center; justify-content: center;
+      font-size: 28px; margin-bottom: 20px;
+    }
+    .feature-card h3 { font-size: 18px; font-weight: 800; margin-bottom: 10px; }
+    .feature-card p { font-size: 14px; color: var(--gray); line-height: 1.7; }
+    .screenshots-section { background: white; padding: 80px 0; }
+    .screenshots-inner { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+    .screenshots-scroll {
+      display: flex; gap: 20px; overflow-x: auto; padding: 20px 0 30px;
+      scroll-snap-type: x mandatory;
+    }
+    .screenshots-scroll::-webkit-scrollbar { height: 6px; }
+    .screenshots-scroll::-webkit-scrollbar-thumb { background: var(--green2); border-radius: 3px; }
+    .screenshot-item {
+      flex: 0 0 auto; scroll-snap-align: start; background: #1c2b18;
+      border-radius: 32px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      width: 220px; position: relative;
+    }
+    .screenshot-item img { width: 100%; height: 440px; object-fit: cover; object-position: top; display: block; }
+    .screenshot-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+      padding: 20px 14px 14px; color: white; font-size: 13px; font-weight: 700; text-align: center;
+    }
+    .privacy-highlight {
+      background: linear-gradient(135deg, #1c2b18, #3a7d44);
+      border-radius: 28px; padding: 60px 48px; color: white;
+      display: flex; gap: 48px; align-items: center; flex-wrap: wrap;
+    }
+    .privacy-highlight .icon-big { font-size: 72px; flex-shrink: 0; }
+    .privacy-highlight h2 { font-size: 28px; font-weight: 900; margin-bottom: 12px; }
+    .privacy-highlight p { font-size: 16px; color: rgba(255,255,255,0.85); line-height: 1.8; }
+    .privacy-points { list-style: none; margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .privacy-points li { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 500; }
+    .privacy-points li::before { content: '✅'; font-size: 16px; }
+    .contact-section { background: white; padding: 80px 0; }
+    .contact-inner { max-width: 680px; margin: 0 auto; padding: 0 40px; }
+    .contact-form { background: var(--light); border-radius: var(--radius); padding: 48px; border: 1.5px solid #e2e8df; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 13px 16px; border: 1.5px solid #d0dbd0; border-radius: 12px;
+      font-family: 'Rubik', sans-serif; font-size: 15px; background: white; direction: rtl;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline: none; border-color: var(--green);
+    }
+    .form-group textarea { min-height: 130px; resize: vertical; }
+    .btn-submit {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--green), var(--green2));
+      color: white; border: none; border-radius: 50px;
+      font-family: 'Rubik', sans-serif; font-size: 16px; font-weight: 800; cursor: pointer;
+    }
+    .docs-section { padding: 56px 40px; max-width: 1100px; margin: 0 auto; }
+    .docs-grid { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 32px; }
+    .doc-link {
+      display: flex; align-items: center; gap: 10px;
+      background: white; border: 1.5px solid #e2e8df; border-radius: 50px;
+      padding: 12px 24px; text-decoration: none; color: var(--dark); font-weight: 600; font-size: 14px;
+    }
+    .doc-link:hover { border-color: var(--green); color: var(--green); }
+    footer { background: var(--dark); color: rgba(255,255,255,0.65); text-align: center; padding: 32px 40px; font-size: 14px; }
+    footer a { color: var(--green2); text-decoration: none; }
+    footer strong { color: white; }
+    @media (max-width: 640px) {
+      nav { padding: 12px 20px; } .nav-links { display: none; }
+      section { padding: 60px 20px; } .hero { padding: 60px 20px 80px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <img src="assets/app-icon-official.png" alt="icon"/>
+    <span>&#1511;&#1500;-&#1511;&#1488;&#1493;&#1504;&#1496;&#1512;+AI</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">&#1508;&#1497;&#1510;&#39;&#1512;&#1497;&#1501;</a></li>
+    <li><a href="#screenshots">&#1510;&#1497;&#1500;&#1493;&#1502;&#1497; &#1502;&#1505;&#1498;</a></li>
+    <li><a href="#privacy">&#1508;&#1512;&#1496;&#1497;&#1493;&#1514;</a></li>
+    <li><a href="#contact">&#1510;&#1493;&#1512; &#1511;&#1513;&#1512;</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <img class="hero-icon" src="assets/app-icon-official.png" alt="App Icon"/>
+  <h1>&#1502;&#1506;&#1511;&#1489; &#1511;&#1500;&#1493;&#1512;&#1497;&#1493;&#1514; <span>&#1495;&#1499;&#1501; &#1493;&#1488;&#1497;&#1513;&#1497;</span></h1>
+  <p>&#1511;&#1500;-&#1511;&#1488;&#1493;&#1504;&#1496;&#1512;+AI &#1502;&#1495;&#1513;&#1489;&#1514; &#1488;&#1514; &#1492;&#1510;&#1512;&#1499;&#1497;&#1501; &#1492;&#1514;&#1494;&#1493;&#1504;&#1514;&#1497;&#1497;&#1501; &#1513;&#1500;&#1498; &#1489;&#1491;&#1497;&#1497;&#1511; &#1502;&#1512;&#1489;&#1497;, &#1506;&#1501; &#1496;&#1499;&#1504;&#1493;&#1500;&#1493;&#1490;&#1497;&#1497;&#1514; &#1489;&#1497;&#1504;&#1492; &#1502;&#1500;&#1488;&#1499;&#1493;&#1514;&#1497;&#1514; &#8212; &#1493;&#1513;&#1493;&#1502;&#1512;&#1514; &#1488;&#1514; &#1499;&#1500; &#1492;&#1504;&#1514;&#1493;&#1504;&#1497;&#1501; &#1513;&#1500;&#1498; &#1488;&#1510;&#1500;&#1498; &#1489;&#1500;&#1489;&#1491;, &#1506;&#1500; &#1492;&#1502;&#1499;&#1513;&#1497;&#1512;.</p>
+  <div class="hero-buttons">
+    <a href="https://play.google.com/store/apps/details?id=YOUR_APP_ID" class="btn-primary" target="_blank">&#9654; &#1492;&#1493;&#1512;&#1491; &#1506;&#1499;&#1513;&#1497;&#1493; &#8212; Google Play</a>
+    <a href="#features" class="btn-secondary">&#1490;&#1500;&#1492; &#1506;&#1493;&#1491; &#8595;</a>
+  </div>
+</div>
+
+<div class="badges">
+  <div class="badge"><span>🤖</span> &#1502;&#1489;&#1493;&#1505;&#1505; AI</div>
+  <div class="badge"><span>🔒</span> &#1508;&#1512;&#1496;&#1497;&#1493;&#1514; &#1502;&#1500;&#1488;&#1492; &#8212; &#1488;&#1495;&#1505;&#1493;&#1503; &#1502;&#1511;&#1493;&#1502;&#1497;</div>
+  <div class="badge"><span>🇮🇱</span> &#1506;&#1489;&#1512;&#1497;&#1514; &#1493;&#1488;&#1504;&#1490;&#1500;&#1497;&#1514;</div>
+  <div class="badge"><span>📊</span> &#1502;&#1506;&#1511;&#1489; &#1497;&#1493;&#1502;&#1497;</div>
+  <div class="badge"><span>⚡</span> &#1495;&#1497;&#1504;&#1502;&#1497; &#1500;&#1492;&#1493;&#1512;&#1491;&#1492;</div>
+</div>
+
+<section id="features">
+  <p class="section-title">&#1499;&#1500; &#1502;&#1492; &#1513;&#1510;&#1512;&#1497;&#1498; &#1500;&#1504;&#1497;&#1492;&#1493;&#1500; &#1514;&#1494;&#1493;&#1504;&#1492; &#1495;&#1499;&#1501;</p>
+  <p class="section-sub">&#1492;&#1490;&#1491;&#1512;&#1492; &#1488;&#1497;&#1513;&#1497;&#1514; &#1502;&#1500;&#1488;&#1492;, &#1502;&#1506;&#1511;&#1489; &#1497;&#1493;&#1502;&#1497;, &#1493;&#1497;&#1506;&#1491;&#1497;&#1501; &#1502;&#1493;&#1514;&#1488;&#1502;&#1497;&#1501; &#1500;&#1490;&#1493;&#1507; &#1513;&#1500;&#1498;</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>&#1495;&#1497;&#1513;&#1493;&#1489; AI &#1488;&#1497;&#1513;&#1497;</h3>
+      <p>&#1489;&#1497;&#1504;&#1492; &#1502;&#1500;&#1488;&#1499;&#1493;&#1514;&#1497;&#1514; &#1502;&#1495;&#1513;&#1489;&#1514; &#1488;&#1514; &#1497;&#1506;&#1491; &#1492;&#1511;&#1500;&#1493;&#1512;&#1497;&#1493;&#1514; &#1513;&#1500;&#1498; &#1489;&#1492;&#1514;&#1488;&#1501; &#1500;&#1490;&#1497;&#1500;, &#1490;&#1493;&#1489;&#1492;, &#1502;&#1513;&#1511;&#1500;, &#1502;&#1490;&#1491;&#1512; &#1493;&#1512;&#1502;&#1514; &#1508;&#1506;&#1497;&#1500;&#1493;&#1514; &#8212; &#1514;&#1493;&#1510;&#1488;&#1492; &#1502;&#1491;&#1493;&#1497;&#1511;&#1514; &#1493;&#1488;&#1497;&#1513;&#1497;&#1514;.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <h3>&#1497;&#1506;&#1491;&#1497;&#1501; &#1502;&#1493;&#1514;&#1488;&#1502;&#1497;&#1501; &#1488;&#1497;&#1513;&#1497;&#1514;</h3>
+      <p>&#1497;&#1512;&#1497;&#1491;&#1492; &#1489;&#1502;&#1513;&#1511;&#1500;, &#1513;&#1502;&#1497;&#1512;&#1492; &#1506;&#1500; &#1502;&#1513;&#1511;&#1500; &#1488;&#1493; &#1506;&#1500;&#1497;&#1497;&#1492; &#8212; &#1489;&#1495;&#1512; &#1488;&#1514; &#1492;&#1502;&#1496;&#1512;&#1492; &#1513;&#1500;&#1498; &#1493;&#1511;&#1489;&#1506; &#1511;&#1510;&#1489; &#1513;&#1489;&#1493;&#1506;&#1497; &#1513;&#1502;&#1514;&#1488;&#1497;&#1501; &#1500;&#1488;&#1493;&#1512;&#1495; &#1492;&#1495;&#1497;&#1497;&#1501; &#1513;&#1500;&#1498;.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>&#1502;&#1506;&#1511;&#1489; &#1514;&#1494;&#1493;&#1504;&#1492; &#1497;&#1493;&#1502;&#1497;</h3>
+      <p>&#1506;&#1511;&#1493;&#1489; &#1488;&#1495;&#1512;&#1497; &#1511;&#1500;&#1493;&#1512;&#1497;&#1493;&#1514;, &#1495;&#1500;&#1489;&#1493;&#1503;, &#1508;&#1495;&#1502;&#1497;&#1502;&#1493;&#1514; &#1493;&#1513;&#1493;&#1502;&#1503; &#8212; &#1512;&#1488;&#1492; &#1489;&#1491;&#1497;&#1493;&#1511; &#1499;&#1502;&#1492; &#1488;&#1499;&#1500;&#1514; &#1489;&#1497;&#1493;&#1501; &#1493;&#1502;&#1492; &#1504;&#1513;&#1488;&#1512; &#1500;&#1498;.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚖️</div>
+      <h3>&#1502;&#1506;&#1511;&#1489; &#1502;&#1513;&#1511;&#1500;</h3>
+      <p>&#1506;&#1491;&#1499;&#1503; &#1488;&#1514; &#1492;&#1502;&#1513;&#1511;&#1500; &#1513;&#1500;&#1498; &#1493;&#1506;&#1511;&#1493;&#1489; &#1488;&#1495;&#1512;&#1497; &#1492;&#1492;&#1514;&#1511;&#1491;&#1502;&#1493;&#1514; &#1500;&#1506;&#1489;&#1512; &#1492;&#1497;&#1506;&#1491; &#8212; &#1490;&#1512;&#1507; &#1493;&#1497;&#1494;&#1493;&#1488;&#1500;&#1497; &#1489;&#1512;&#1493;&#1512; &#1513;&#1500; &#1492;&#1513;&#1497;&#1504;&#1493;&#1497; &#1500;&#1488;&#1493;&#1512;&#1498; &#1494;&#1502;&#1503;.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>&#1508;&#1512;&#1496;&#1497;&#1493;&#1514; &#1502;&#1500;&#1488;&#1492;</h3>
+      <p>&#1499;&#1500; &#1492;&#1504;&#1514;&#1493;&#1504;&#1497;&#1501; &#1513;&#1500;&#1498; &#1504;&#1513;&#1502;&#1512;&#1497;&#1501; &#1488;&#1498; &#1493;&#1512;&#1511; &#1506;&#1500; &#1492;&#1502;&#1499;&#1513;&#1497;&#1512; &#1513;&#1500;&#1498;. &#1488;&#1497;&#1503; &#1513;&#1512;&#1514;&#1497;&#1501; &#1495;&#1497;&#1510;&#1493;&#1504;&#1497;&#1497;&#1501;, &#1488;&#1497;&#1503; &#1488;&#1497;&#1505;&#1493;&#1507; &#1504;&#1514;&#1493;&#1504;&#1497;&#1501;, &#1488;&#1497;&#1503; &#1502;&#1506;&#1511;&#1489;.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌍</div>
+      <h3>&#1506;&#1489;&#1512;&#1497;&#1514; &#1493;&#1488;&#1504;&#1490;&#1500;&#1497;&#1514;</h3>
+      <p>&#1502;&#1502;&#1513;&#1511; &#1502;&#1500;&#1488; &#1489;&#1513;&#1514;&#1497; &#1513;&#1508;&#1493;&#1514; &#1506;&#1501; &#1506;&#1497;&#1510;&#1493;&#1489; &#1502;&#1493;&#1514;&#1488;&#1501; &#1500;&#1499;&#1500; &#1499;&#1497;&#1493;&#1493;&#1503; &#1511;&#1512;&#1497;&#1488;&#1492; &#8212; RTL &#1500;&#1506;&#1489;&#1512;&#1497;&#1514;, LTR &#1500;&#1488;&#1504;&#1490;&#1500;&#1497;&#1514;.</p>
+    </div>
+  </div>
+</section>
+
+<div class="screenshots-section" id="screenshots">
+  <div class="screenshots-inner">
+    <p class="section-title">&#1510;&#1497;&#1500;&#1493;&#1502;&#1497; &#1502;&#1505;&#1498;</p>
+    <p class="section-sub">&#1495;&#1493;&#1493;&#1497;&#1497;&#1514; &#1492;&#1502;&#1513;&#1514;&#1502;&#1513; &#8212; &#1508;&#1513;&#1493;&#1496;&#1492;, &#1497;&#1508;&#1492; &#1493;&#1488;&#1497;&#1504;&#1496;&#1493;&#1488;&#1497;&#1496;&#1497;&#1489;&#1497;&#1514;</p>
+    <div class="screenshots-scroll">
+      <div class="screenshot-item">
+        <img src="assets/new_extracted/5.png" alt="screen"/>
+        <div class="screenshot-label">&#1502;&#1505;&#1498; &#1508;&#1514;&#1497;&#1495;&#1492;</div>
+      </div>
+      <div class="screenshot-item">
+        <img src="assets/new_extracted/7.png" alt="screen"/>
+        <div class="screenshot-label">&#1492;&#1490;&#1491;&#1512;&#1514; &#1508;&#1512;&#1493;&#1508;&#1497;&#1500;</div>
+      </div>
+      <div class="screenshot-item">
+        <img src="assets/new_extracted/8.png" alt="screen"/>
+        <div class="screenshot-label">&#1489;&#1495;&#1497;&#1512;&#1514; &#1502;&#1496;&#1512;&#1492;</div>
+      </div>
+      <div class="screenshot-item">
+        <img src="assets/new_extracted/17.png" alt="screen"/>
+        <div class="screenshot-label">&#1512;&#1502;&#1514; &#1508;&#1506;&#1497;&#1500;&#1493;&#1514;</div>
+      </div>
+      <div class="screenshot-item">
+        <img src="assets/new_extracted/18.png" alt="screen"/>
+        <div class="screenshot-label">&#1502;&#1505;&#1498; &#1514;&#1493;&#1510;&#1488;&#1493;&#1514;</div>
+      </div>
+      <div class="screenshot-item">
+        <img src="assets/new_extracted/20.png" alt="screen"/>
+        <div class="screenshot-label">&#1502;&#1506;&#1511;&#1489; &#1497;&#1493;&#1502;&#1497;</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="privacy" style="padding-top:80px;padding-bottom:80px;">
+  <div class="privacy-highlight">
+    <div class="icon-big">🔒</div>
+    <div>
+      <h2>&#1492;&#1504;&#1514;&#1493;&#1504;&#1497;&#1501; &#1513;&#1500;&#1498; &#8212; &#1513;&#1500;&#1498; &#1489;&#1500;&#1489;&#1491;</h2>
+      <p>&#1489;&#1504;&#1497;&#1490;&#1493;&#1491; &#1500;&#1488;&#1508;&#1500;&#1497;&#1511;&#1510;&#1497;&#1493;&#1514; &#1488;&#1495;&#1512;&#1493;&#1514; &#1513;&#1488;&#1493;&#1505;&#1508;&#1493;&#1514; &#1493;&#1502;&#1493;&#1499;&#1512;&#1493;&#1514; &#1488;&#1514; &#1504;&#1514;&#1493;&#1504;&#1497; &#1492;&#1489;&#1512;&#1497;&#1488;&#1493;&#1514; &#1513;&#1500;&#1498;, &#1511;&#1500;-&#1511;&#1488;&#1493;&#1504;&#1496;&#1512;+AI &#1489;&#1504;&#1493;&#1497;&#1492; &#1506;&#1500; &#1506;&#1497;&#1511;&#1512;&#1493;&#1503; Privacy by Design.</p>
+      <ul class="privacy-points">
+        <li>&#1488;&#1495;&#1505;&#1493;&#1503; &#1502;&#1511;&#1493;&#1502;&#1497; &#1489;&#1500;&#1489;&#1491; &#8212; &#1500;&#1500;&#1488; &#1513;&#1512;&#1514;&#1497;&#1501; &#1495;&#1497;&#1510;&#1493;&#1504;&#1497;&#1497;&#1501;</li>
+        <li>&#1488;&#1497;&#1503; &#1488;&#1497;&#1505;&#1493;&#1507; &#1504;&#1514;&#1493;&#1504;&#1497; &#1513;&#1497;&#1502;&#1493;&#1513; &#1488;&#1493; &#1488;&#1504;&#1500;&#1497;&#1496;&#1497;&#1511;&#1492;</li>
+        <li>&#1488;&#1497;&#1503; &#1513;&#1497;&#1514;&#1493;&#1507; &#1506;&#1501; &#1510;&#1491;&#1491;&#1497;&#1501; &#1513;&#1500;&#1497;&#1513;&#1497;&#1497;&#1501;</li>
+        <li>&#1506;&#1502;&#1497;&#1491;&#1492; &#1489;&#1495;&#1493;&#1511;&#1497; &#1492;&#1490;&#1504;&#1514; &#1492;&#1508;&#1512;&#1496;&#1497;&#1493;&#1514; &#1489;&#1497;&#1513;&#1512;&#1488;&#1500; &#1493;-GDPR</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="contact-section" id="contact">
+  <div class="contact-inner">
+    <p class="section-title">&#1510;&#1493;&#1512; &#1511;&#1513;&#1512;</p>
+    <p class="section-sub">&#1513;&#1488;&#1500;&#1493;&#1514;, &#1492;&#1510;&#1506;&#1493;&#1514; &#1488;&#1493; &#1502;&#1513;&#1493;&#1489;? &#1504;&#1513;&#1502;&#1495; &#1500;&#1513;&#1502;&#1493;&#1506;&#1497;&#1506;</p>
+    <div class="contact-form">
+      <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <div class="form-group">
+          <label>&#1513;&#1501; &#1502;&#1500;&#1488;</label>
+          <input type="text" name="name" placeholder="&#1492;&#1499;&#1504;&#1505; &#1488;&#1514; &#1513;&#1502;&#1498;" required/>
+        </div>
+        <div class="form-group">
+          <label>&#1499;&#1514;&#1493;&#1489;&#1514; &#1488;&#1497;&#1502;&#1497;&#1497;&#1500;</label>
+          <input type="email" name="email" placeholder="your@email.com" required/>
+        </div>
+        <div class="form-group">
+          <label>&#1504;&#1493;&#1513;&#1488;</label>
+          <select name="subject">
+            <option value="">&#1489;&#1495;&#1512; &#1504;&#1493;&#1513;&#1488;...</option>
+            <option value="bug">&#1491;&#1497;&#1493;&#1493;&#1495; &#1506;&#1500; &#1514;&#1511;&#1500;&#1492;</option>
+            <option value="feature">&#1489;&#1511;&#1513;&#1514; &#1508;&#1497;&#1510;&#39;&#1512;</option>
+            <option value="privacy">&#1513;&#1488;&#1500;&#1492; &#1506;&#1500; &#1508;&#1512;&#1496;&#1497;&#1493;&#1514;</option>
+            <option value="other">&#1488;&#1495;&#1512;</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>&#1492;&#1493;&#1491;&#1506;&#1492;</label>
+          <textarea name="message" placeholder="&#1499;&#1514;&#1493;&#1489; &#1488;&#1514; &#1492;&#1492;&#1493;&#1491;&#1506;&#1492; &#1513;&#1500;&#1498; &#1499;&#1488;&#1503;..." required></textarea>
+        </div>
+        <button type="submit" class="btn-submit">&#1513;&#1500;&#1495; &#1492;&#1493;&#1491;&#1506;&#1492; ✉️</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="docs-section">
+  <p class="section-title" style="font-size:22px;">&#1502;&#1505;&#1502;&#1499;&#1497;&#1501; &#1502;&#1513;&#1508;&#1496;&#1497;&#1497;&#1501;</p>
+  <div class="docs-grid">
+    <a href="https://sites.google.com/YOUR_TERMS" class="doc-link" target="_blank"><span>📄</span> &#1514;&#1504;&#1488;&#1497; &#1513;&#1497;&#1502;&#1493;&#1513;</a>
+    <a href="https://sites.google.com/YOUR_PRIVACY" class="doc-link" target="_blank"><span>🔒</span> &#1502;&#1491;&#1497;&#1504;&#1497;&#1493;&#1514; &#1508;&#1512;&#1496;&#1497;&#1493;&#1514;</a>
+    <a href="https://sites.google.com/YOUR_CHOICES" class="doc-link" target="_blank"><span>⚙️</span> &#1489;&#1495;&#1497;&#1512;&#1493;&#1514; &#1508;&#1512;&#1496;&#1497;&#1493;&#1514;</a>
+    <a href="mailto:calcounter2@gmail.com" class="doc-link"><span>📧</span> calcounter2@gmail.com</a>
+  </div>
+</div>
+
+<footer>
+  <p>
+    &copy; 2026 <strong>&#1511;&#1500;-&#1511;&#1488;&#1493;&#1504;&#1496;&#1512;+AI</strong> &#8212; &#1508;&#1493;&#1514;&#1495; &#1506;&#1500; &#1497;&#1491;&#1497; <strong>&#1488;&#1497;&#1497;&#1500;</strong>
+    &nbsp;|&nbsp;
+    <a href="https://sites.google.com/YOUR_TERMS">&#1514;&#1504;&#1488;&#1497; &#1513;&#1497;&#1502;&#1493;&#1513;</a>
+    &nbsp;|&nbsp;
+    <a href="https://sites.google.com/YOUR_PRIVACY">&#1502;&#1491;&#1497;&#1504;&#1497;&#1493;&#1514; &#1508;&#1512;&#1496;&#1497;&#1493;&#1514;</a>
+    &nbsp;|&nbsp;
+    <a href="mailto:calcounter2@gmail.com">calcounter2@gmail.com</a>
+  </p>
+</footer>
+
+</body>
+</html>
